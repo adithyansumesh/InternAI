@@ -1,0 +1,117 @@
+# Node.js / React / Next.js
+node_modules/
+.next/
+out/
+build/
+dist/
+.npm
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+/lib/
+!apps/web/lib/
+!apps/web/lib/**
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+.venv/
+env/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Testing caches
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs and Debug Output Files (specific to this project's root)
+*.log
+debug_output*.txt
+pytest_out*.txt
+out.txt
+test_result.txt
+traceback.txt
+payload.json
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated PDFs and Resumes
+sample_resume.pdf
+sample_resume.txt
+test.pdf
+apps/api/test.pdf
+apps/web/public/*.pdf
+
+# Runtime backend data (keep directories only)
+apps/api/data/uploads/*
+apps/api/data/faiss_index/*
+apps/api/data/*.db
+apps/api/data/*.sqlite*
+!apps/api/data/uploads/.gitkeep
+!apps/api/data/faiss_index/.gitkeep
+
+# Misc
+.vercel/
+.python-version
+.ipynb_checkpoints
+apps/api/.venv
+apps/api/.env
+apps/web/.env.local
+node_modules
+.next

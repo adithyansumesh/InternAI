@@ -1,0 +1,42 @@
+# Core Framework
+fastapi
+uvicorn[standard]
+
+# Settings
+pydantic-settings
+python-dotenv
+
+# LLM
+openai
+
+# Embeddings & ML
+sentence-transformers
+torch
+numpy
+
+# PDF Processing
+pdfplumber
+fpdf2
+PyPDF2
+
+# NLP
+# spacy is optional - only needed if NLP service is used
+# Install separately: pip install spacy && python -m spacy download en_core_web_sm
+
+# Database & Storage
+sqlalchemy
+supabase
+redis>=5.0.0
+
+# Auth
+bcrypt
+PyJWT
+python-multipart
+
+# HTTP & Scraping
+requests
+beautifulsoup4
+httpx
+
+# Utilities
+python-jose[cryptography]
