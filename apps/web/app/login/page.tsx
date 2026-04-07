@@ -46,7 +46,9 @@ export default function LoginPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.detail || "Authentication failed")
+        const detail = data.detail;
+        const message = typeof detail === 'string' ? detail : (Array.isArray(detail) ? detail.map((d: any) => d.msg || d.message || JSON.stringify(d)).join(', ') : JSON.stringify(detail) || 'Authentication failed');
+        throw new Error(message)
       }
 
       if (isLogin) {
@@ -62,7 +64,8 @@ export default function LoginPage() {
       }
 
     } catch (err: any) {
-        setError(err.message)
+        const msg = err?.message || 'An unexpected error occurred';
+        setError(typeof msg === 'string' ? msg : String(msg))
     } finally {
         setIsLoading(false)
     }
