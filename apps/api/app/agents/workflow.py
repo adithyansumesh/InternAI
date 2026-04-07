@@ -66,7 +66,7 @@ class ApplicationWorkflow:
             )
             
             match_eval = MatchEvaluation(
-                match_score=int(match_response.match_score // 10), # scale to 1-10
+                match_score=max(0, min(10, int(match_response.match_score // 10))), # scale to 0-10
                 reasoning=f"Matched skills: {', '.join(match_response.matched_skills)}. Missing: {', '.join(match_response.missing_skills)}.",
                 recommendation=match_response.recommendation
             )

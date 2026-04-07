@@ -14,7 +14,7 @@ class InternshipListing(BaseModel):
     application_link: str
 
 class MatchEvaluation(BaseModel):
-    match_score: int = Field(ge=1, le=10)
+    match_score: int = Field(ge=0, le=10)
     reasoning: str
     recommendation: str
 
