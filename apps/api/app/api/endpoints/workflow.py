@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from typing import Optional
 from app.core.logger import get_logger
 from app.models.agent_schemas import FinalApplicationPackage
 from app.models.store import resume_store
 from app.agents.workflow import ApplicationWorkflow
-from app.core.dependencies import get_llm_service, get_embedding_service, get_faiss_service
+from app.core.dependencies import get_llm_service
 from app.services.matching_service import MatchingService
 from app.services.cover_letter_service import CoverLetterService
 from app.agents.resume_tailor_agent import ResumeTailorAgent
@@ -20,17 +19,14 @@ class WorkflowRunRequest(BaseModel):
     location: str
 
 def get_matching_service(
-    embed_svc=Depends(get_embedding_service),
-    faiss_svc=Depends(get_faiss_service)
+    llm_svc=Depends(get_llm_service),
 ) -> MatchingService:
-    return MatchingService(embed_svc, faiss_svc)
+    return MatchingService(llm_svc)
 
 def get_cover_letter_service(
     llm_svc=Depends(get_llm_service),
-    embed_svc=Depends(get_embedding_service),
-    faiss_svc=Depends(get_faiss_service)
 ) -> CoverLetterService:
-    return CoverLetterService(llm_svc, embed_svc, faiss_svc)
+    return CoverLetterService(llm_svc)
 
 def get_application_workflow(
     llm=Depends(get_llm_service),
@@ -48,7 +44,6 @@ async def run_workflow(
 ):
     """
     Executes the multi-agent Application Discovery and Application Workflow.
-    Requires a valid resume_id from a previously uploaded and parsed resume.
     """
     logger.info(f"Triggered workflow run for resume: {request.resume_id}")
     
