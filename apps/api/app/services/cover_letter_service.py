@@ -1,13 +1,11 @@
 """
-services/cover_letter_service.py — Cover Letter Generator (Phase 3 + Phase 4 RAG).
+services/cover_letter_service.py — Cover Letter Generator (Phase 3).
 Uses a structured prompt template + LLM to generate personalized cover letters.
-Optionally augments prompts with RAG-retrieved resume chunks for richer context.
+Lightweight version without heavy embedding dependencies.
 """
 
 from typing import Optional, List
 from app.services.llm_service import LLMService
-from app.services.embedding_service import EmbeddingService
-from app.services.faiss_service import FAISSService
 from app.models.schemas import ParsedResume, CoverLetterRequest, CoverLetterResponse
 from app.core.config import settings
 from app.core.logger import get_logger
@@ -27,11 +25,10 @@ def build_cover_letter_prompt(
     company_name: Optional[str],
     job_title: Optional[str],
     tone: str,
-    rag_chunks: Optional[List[str]] = None,
 ) -> str:
     """
     Construct the structured prompt for cover letter generation.
-    Injects resume data, job context, tone, and optional RAG chunks.
+    Injects resume data, job context, and tone.
     """
     # Format resume data
     skills_str = ", ".join(resume.skills[:15]) if resume.skills else "Not specified"
@@ -47,11 +44,6 @@ def build_cover_letter_prompt(
             entry = f"- {e.title or 'Role'} at {e.company or 'Company'}"
             exp_entries.append(entry)
         exp_str = "\n".join(exp_entries)
-
-    # RAG context block
-    rag_context = ""
-    if rag_chunks:
-        rag_context = "\n\n=== Additional Resume Context ===\n" + "\n---\n".join(rag_chunks[:3])
 
     # Tone instruction
     tone_map = {
@@ -71,7 +63,6 @@ Education: {edu_str or "Not specified"}
 Relevant Experience:
 {exp_str or "No experience listed"}
 Summary: {resume.summary or "Not provided"}
-{rag_context}
 
 === TARGET OPPORTUNITY ===
 Company: {company_name or "the company"}
@@ -91,17 +82,10 @@ Write the complete cover letter now (no subject line needed, start with "Dear Hi
 
 
 class CoverLetterService:
-    """Generates personalized cover letters using LLM + optional RAG."""
+    """Generates personalized cover letters using LLM."""
 
-    def __init__(
-        self,
-        llm_service: LLMService,
-        embedding_service: EmbeddingService,
-        faiss_service: FAISSService,
-    ):
+    def __init__(self, llm_service: LLMService):
         self.llm = llm_service
-        self.embedder = embedding_service
-        self.faiss = faiss_service
 
     def generate(
         self,
@@ -109,22 +93,8 @@ class CoverLetterService:
         parsed_resume: ParsedResume,
         request: CoverLetterRequest,
     ) -> CoverLetterResponse:
-        """
-        Generate a personalized cover letter.
-
-        Phase 4 RAG: If resume chunks are indexed, retrieve the top-K
-        most relevant chunks to enrich the prompt context.
-        """
+        """Generate a personalized cover letter."""
         logger.info(f"Generating cover letter for resume '{resume_id}'")
-
-        # Phase 4: Retrieve RAG chunks if indexed
-        rag_chunks = []
-        if self.faiss.namespace_exists(resume_id):
-            query = f"{request.job_title or ''} {request.job_description[:200]}"
-            query_vec = self.embedder.embed(query)
-            results = self.faiss.search(resume_id, query_vec, top_k=settings.RAG_TOP_K)
-            rag_chunks = [text for text, _ in results]
-            logger.info(f"RAG retrieved {len(rag_chunks)} chunks for enrichment")
 
         # Build prompt
         prompt = build_cover_letter_prompt(
@@ -133,7 +103,6 @@ class CoverLetterService:
             company_name=request.company_name,
             job_title=request.job_title,
             tone=request.tone or "professional",
-            rag_chunks=rag_chunks if rag_chunks else None,
         )
 
         # Generate via LLM

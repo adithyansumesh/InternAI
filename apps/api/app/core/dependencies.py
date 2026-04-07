@@ -1,13 +1,12 @@
 """
 core/dependencies.py — FastAPI dependency injection.
-Provides singleton-like instances of heavy services (spaCy, embedder, FAISS, LLM).
+Provides singleton-like instances of services (NLP, LLM).
 These are injected into route handlers via FastAPI's Depends() mechanism.
+Optimized for low-memory deployment (no heavy ML models).
 """
 
 from functools import lru_cache
 from app.services.nlp_service import NLPService
-from app.services.embedding_service import EmbeddingService
-from app.services.faiss_service import FAISSService
 from app.services.llm_service import LLMService
 from app.services.resume_parser import ResumeParserService
 from app.core.config import settings
@@ -21,20 +20,6 @@ from fastapi.security import OAuth2PasswordBearer
 def get_nlp_service() -> NLPService:
     """Singleton NLP service (spaCy model loaded once)."""
     return NLPService(model_name=settings.SPACY_MODEL)
-
-
-@lru_cache()
-def get_embedding_service() -> EmbeddingService:
-    """Singleton embedding service (SentenceTransformer loaded once)."""
-    return EmbeddingService(model_name=settings.EMBEDDING_MODEL)
-
-
-@lru_cache()
-def get_faiss_service() -> FAISSService:
-    """Singleton FAISS vector store service."""
-    return FAISSService(
-        dimension=settings.FAISS_DIMENSION,
-    )
 
 
 @lru_cache()

@@ -9,19 +9,10 @@ python-dotenv
 # LLM
 openai
 
-# Embeddings & ML
-sentence-transformers
-torch
-numpy
-
 # PDF Processing
 pdfplumber
 fpdf2
 PyPDF2
-
-# NLP
-# spacy is optional - only needed if NLP service is used
-# Install separately: pip install spacy && python -m spacy download en_core_web_sm
 
 # Database & Storage
 sqlalchemy
@@ -40,3 +31,4 @@ httpx
 
 # Utilities
 python-jose[cryptography]
+numpy
